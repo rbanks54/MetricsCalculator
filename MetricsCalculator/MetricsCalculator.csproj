@@ -59,6 +59,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ABCStrategy.cs" />
     <Compile Include="CyclomaticComplexityStrategy.cs" />
     <Compile Include="IDataStoreProvider.cs" />
     <Compile Include="ILinesAndCyclomaticReportFormatter.cs" />

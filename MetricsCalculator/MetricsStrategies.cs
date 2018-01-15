@@ -12,6 +12,7 @@ namespace MetricsCalculator
             _strategies = new List<IMetricsStrategy>();
             _strategies.Add(new LinesOfCodeStrategy());
             _strategies.Add(new CyclomaticComplexityStrategy());
+            _strategies.Add(new ABCStrategy());
 
             foreach (IMetricsStrategy strategy in _strategies)
             {
