@@ -53,19 +53,30 @@ namespace MetricsCalculator
 
         public void FinalizeSelf(MetricsAccumulationNode node)
         {
-            int totalComplexity;
-            node.TryGetDataItem<int>(ABCMetricData, out totalComplexity);
+            int assignmentCount;
+            int branchCount;
+            int callCount;
+            double abcCount;
+            double childrenAbcCount = 0;
+
+            node.TryGetDataItem<int>(AssignmentCount, out assignmentCount);
+            node.TryGetDataItem<int>(BranchingCount, out branchCount);
+            node.TryGetDataItem<int>(CallCount, out callCount);
+            node.TryGetDataItem<double>(ABCMetricData, out abcCount);
+            abcCount = Math.Sqrt((assignmentCount ^ 2) + (branchCount ^ 2) + (callCount ^ 2));
+            node.SetDataItem<double>(ABCMetricData, abcCount);
+
             foreach (MetricsAccumulationNode child in node.children)
             {
-                int childComplexity = 0;
-                if (child.TryGetDataItem<int>(TotalABCMetricData, out childComplexity) ||
-                    child.TryGetDataItem<int>(ABCMetricData, out childComplexity))
+                double childABCMetric = 0;
+                if (child.TryGetDataItem<double>(TotalABCMetricData, out childABCMetric) ||
+                    child.TryGetDataItem<double>(ABCMetricData, out childABCMetric))
                 {
-                    totalComplexity += childComplexity;
+                    childrenAbcCount += childABCMetric;
                 }
             }
-            node.SetDataItem<int>(TotalABCMetricData, totalComplexity);
 
+            node.SetDataItem<double>(TotalABCMetricData, childrenAbcCount);
         }
 
         public void Process(SyntaxNode node)
@@ -87,7 +98,7 @@ namespace MetricsCalculator
         public void InitializeSelf()
         {
             IMetricsDataStore storage = dataProvider.GetDataStore();
-            storage.SetDataItem<int>(ABCMetricData, 0);
+            storage.SetDataItem<double>(ABCMetricData, 0);
             storage.SetDataItem<int>(AssignmentCount, 0);
             storage.SetDataItem<int>(BranchingCount, 0);
             storage.SetDataItem<int>(CallCount, 0);

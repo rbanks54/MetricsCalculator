@@ -23,7 +23,9 @@ namespace MetricsCalculator
                 MetricsAccumulator metrics = analyzer.GetMetrics(args[0]);
                 LinesAndCyclomaticReport<string> report = new LinesAndCyclomaticReport<string>(new LinesAndCyclomaticReportConsoleFormatter());
                 Console.WriteLine(report.GenerateReport(metrics));
-                Console.ReadLine();
+
+                ABCMetricsReport<string> abcReport = new ABCMetricsReport<string>(new ABCMetricsReportConsoleFormatter());
+                Console.WriteLine(abcReport.GenerateReport(metrics));
             }
             catch (Exception e)
             {

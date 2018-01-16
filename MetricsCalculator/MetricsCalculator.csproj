@@ -62,12 +62,15 @@
     <Compile Include="ABCStrategy.cs" />
     <Compile Include="CyclomaticComplexityStrategy.cs" />
     <Compile Include="IDataStoreProvider.cs" />
+    <Compile Include="IABCMetricsReportFormatter.cs" />
     <Compile Include="ILinesAndCyclomaticReportFormatter.cs" />
     <Compile Include="IMetricsDataStore.cs" />
     <Compile Include="IMetricsStrategy.cs" />
     <Compile Include="InOrderReporter.cs" />
     <Compile Include="IReport.cs" />
+    <Compile Include="ABCMetricReport.cs" />
     <Compile Include="LinesAndCyclomaticReport.cs" />
+    <Compile Include="ABCMetricsReportConsoleFormatter.cs" />
     <Compile Include="LinesAndCyclomaticReportConsoleFormatter.cs" />
     <Compile Include="LinesOfCodeStrategy.cs" />
     <Compile Include="MetricsAccumulationNode.cs" />
