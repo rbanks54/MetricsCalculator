@@ -16,7 +16,7 @@ namespace MetricsCalculator
             outputDelievered = false;
         }
 
-        public void AddItem(int depth, string name, double abcCount, double totalAbcCount)
+        public void AddItem(int depth, string name, double abcScore, double abcScoreWithChildren)
         {
             if (outputDelievered)
             {
@@ -24,7 +24,11 @@ namespace MetricsCalculator
             }
 
             var indents = new String('\t', depth);
-            var reportLine = $"{indents}{name}\tABC: {abcCount:0.##} \tTotal ABC: {totalAbcCount:0.##}";
+            var reportLine = $"{indents}{name}\tABC: {abcScore:0.##}";
+            if (abcScoreWithChildren > 0)
+            {
+                reportLine += $" \tTotal ABC: {abcScoreWithChildren:0.##}";
+            }
 
             sb.AppendLine(reportLine);
         }

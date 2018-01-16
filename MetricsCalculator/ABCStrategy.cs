@@ -10,15 +10,13 @@ namespace MetricsCalculator
 {
     class ABCStrategy : IMetricsStrategy
     {
-        public static readonly string ABCMetricData = "ABCMetric";
-        public static readonly string TotalABCMetricData = "TotalABCMetric";
+        public static readonly string ABCScoreAccumulator = "ABCScore";
+        public static readonly string ABCScoreWithChildrenAccumulator = "ABCScoreWithChildren";
         public static readonly string AssignmentCount = "AssignmentCount";
         public static readonly string BranchingCount = "BranchingCount";
         public static readonly string CallCount = "CallCount";
 
         IDataStoreProvider dataProvider;
-
-        SortedSet<SyntaxKind> linesToCount;
 
         /// <summary>
         /// ABC Metric Calculation
@@ -33,7 +31,6 @@ namespace MetricsCalculator
         /// 
         /// ABCValue = sqrt(Assignments^2 + Branches^2 + Calls^2)
         /// </remarks>
-
 
         List<SyntaxKind> BranchingSyntax = new List<SyntaxKind>
         {
@@ -56,27 +53,27 @@ namespace MetricsCalculator
             int assignmentCount;
             int branchCount;
             int callCount;
-            double abcCount;
-            double childrenAbcCount = 0;
 
             node.TryGetDataItem<int>(AssignmentCount, out assignmentCount);
             node.TryGetDataItem<int>(BranchingCount, out branchCount);
             node.TryGetDataItem<int>(CallCount, out callCount);
-            node.TryGetDataItem<double>(ABCMetricData, out abcCount);
-            abcCount = Math.Sqrt((assignmentCount ^ 2) + (branchCount ^ 2) + (callCount ^ 2));
-            node.SetDataItem<double>(ABCMetricData, abcCount);
+            var ABCScore = Math.Sqrt((assignmentCount ^ 2) + (branchCount ^ 2) + (callCount ^ 2));
+            node.SetDataItem<double>(ABCScoreAccumulator, ABCScore);
 
-            foreach (MetricsAccumulationNode child in node.children)
+            if (node.children.Count > 0)
             {
-                double childABCMetric = 0;
-                if (child.TryGetDataItem<double>(TotalABCMetricData, out childABCMetric) ||
-                    child.TryGetDataItem<double>(ABCMetricData, out childABCMetric))
+                var ABCWithChildren = ABCScore;
+                foreach (MetricsAccumulationNode child in node.children)
                 {
-                    childrenAbcCount += childABCMetric;
+                    double ABCScoreForChildren = 0;
+                    if (child.TryGetDataItem<double>(ABCScoreWithChildrenAccumulator, out ABCScoreForChildren) ||
+                        child.TryGetDataItem<double>(ABCScoreAccumulator, out ABCScoreForChildren))
+                    {
+                        ABCWithChildren += ABCScoreForChildren;
+                    }
                 }
+                node.SetDataItem<double>(ABCScoreWithChildrenAccumulator, ABCWithChildren);
             }
-
-            node.SetDataItem<double>(TotalABCMetricData, childrenAbcCount);
         }
 
         public void Process(SyntaxNode node)
@@ -98,7 +95,7 @@ namespace MetricsCalculator
         public void InitializeSelf()
         {
             IMetricsDataStore storage = dataProvider.GetDataStore();
-            storage.SetDataItem<double>(ABCMetricData, 0);
+            storage.SetDataItem<double>(ABCScoreAccumulator, 0);
             storage.SetDataItem<int>(AssignmentCount, 0);
             storage.SetDataItem<int>(BranchingCount, 0);
             storage.SetDataItem<int>(CallCount, 0);

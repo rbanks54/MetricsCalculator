@@ -31,9 +31,9 @@ namespace MetricsCalculator
 
             double abcCount, totalAbcCount;
 
-            node.TryGetDataItem<double>(ABCStrategy.ABCMetricData, out abcCount);
+            node.TryGetDataItem<double>(ABCStrategy.ABCScoreAccumulator, out abcCount);
 
-            node.TryGetDataItem<double>(ABCStrategy.TotalABCMetricData, out totalAbcCount);
+            node.TryGetDataItem<double>(ABCStrategy.ABCScoreWithChildrenAccumulator, out totalAbcCount);
 
             formatter.AddItem(depth, node.Name, abcCount, totalAbcCount);
 
