@@ -44,6 +44,28 @@ namespace MetricsCalculator
             SyntaxKind.LogicalAndExpression,
         };
 
+        List<SyntaxKind> AssignmentSyntax = new List<SyntaxKind>
+        {
+            SyntaxKind.SimpleAssignmentExpression,
+            SyntaxKind.AddAssignmentExpression,
+            SyntaxKind.AndAssignmentExpression,
+            SyntaxKind.DivideAssignmentExpression,
+            SyntaxKind.ExclusiveOrAssignmentExpression,
+            SyntaxKind.LeftShiftAssignmentExpression,
+            SyntaxKind.ModuloAssignmentExpression,
+            SyntaxKind.MultiplyAssignmentExpression,
+            SyntaxKind.OrAssignmentExpression,
+            SyntaxKind.RightShiftAssignmentExpression,
+            SyntaxKind.SubtractAssignmentExpression,
+        };
+
+        List<SyntaxKind> CallSyntax = new List<SyntaxKind>
+        {
+            SyntaxKind.InvocationExpression,
+            SyntaxKind.ObjectCreationExpression,
+            SyntaxKind.SimpleMemberAccessExpression
+        };
+
         public ABCStrategy()
         {
         }
@@ -57,7 +79,7 @@ namespace MetricsCalculator
             node.TryGetDataItem<int>(AssignmentCount, out assignmentCount);
             node.TryGetDataItem<int>(BranchingCount, out branchCount);
             node.TryGetDataItem<int>(CallCount, out callCount);
-            var ABCScore = Math.Sqrt((assignmentCount ^ 2) + (branchCount ^ 2) + (callCount ^ 2));
+            var ABCScore = Math.Sqrt(Math.Pow(assignmentCount,2) + Math.Pow(branchCount,2) + Math.Pow(callCount,2));
             node.SetDataItem<double>(ABCScoreAccumulator, ABCScore);
 
             if (node.children.Count > 0)
@@ -79,12 +101,35 @@ namespace MetricsCalculator
         public void Process(SyntaxNode node)
         {
             IMetricsDataStore storage = dataProvider.GetDataStore();
-            if (BranchingSyntax.Contains(node.Kind()))
+            var nodeKind = node.Kind();
+
+            if (AssignmentSyntax.Contains(nodeKind))
             {
-                int currentCount;
-                storage.TryGetDataItem<int>(BranchingCount, out currentCount);
-                storage.SetDataItem<int>(BranchingCount, ++currentCount);
+                IncrementOccurenceCount(AssignmentCount);
             }
+
+            if (nodeKind == SyntaxKind.EqualsValueClause && node.Parent.IsKind(SyntaxKind.VariableDeclarator))
+            {
+                IncrementOccurenceCount(AssignmentCount);
+            }
+
+            if (BranchingSyntax.Contains(nodeKind))
+            {
+                IncrementOccurenceCount(BranchingCount);
+            }
+
+            if (CallSyntax.Contains(nodeKind))
+            {
+                IncrementOccurenceCount(CallCount);
+            }
+        }
+
+        private void IncrementOccurenceCount(string counterName)
+        {
+            IMetricsDataStore storage = dataProvider.GetDataStore();
+            int currentCount;
+            storage.TryGetDataItem<int>(counterName, out currentCount);
+            storage.SetDataItem<int>(counterName, ++currentCount);
         }
 
         public void SetDataStoreProvider(IDataStoreProvider dataProvider)
