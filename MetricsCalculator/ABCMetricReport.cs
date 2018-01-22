@@ -30,12 +30,16 @@ namespace MetricsCalculator
             SyntaxKind nodeKind = node.nodeReference.Kind();
 
             double abcCount, totalAbcCount;
+            int assignments, branches, calls;
 
-            node.TryGetDataItem<double>(ABCStrategy.ABCScoreAccumulator, out abcCount);
+            node.TryGetDataItem(ABCStrategy.ABCScoreAccumulator, out abcCount);
+            node.TryGetDataItem(ABCStrategy.AssignmentCount, out assignments);
+            node.TryGetDataItem(ABCStrategy.BranchingCount, out branches);
+            node.TryGetDataItem(ABCStrategy.CallCount, out calls);
 
             node.TryGetDataItem<double>(ABCStrategy.ABCScoreWithChildrenAccumulator, out totalAbcCount);
 
-            formatter.AddItem(depth, node.Name, abcCount, totalAbcCount);
+            formatter.AddItem(depth, node.Name, abcCount, totalAbcCount, assignments, branches, calls);
 
             base.Visit(node);
             depth--;

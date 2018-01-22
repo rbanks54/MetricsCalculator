@@ -44,6 +44,8 @@ namespace MetricsCalculator
             SyntaxKind.LogicalAndExpression,
         };
 
+        //yield return?
+
         List<SyntaxKind> AssignmentSyntax = new List<SyntaxKind>
         {
             SyntaxKind.SimpleAssignmentExpression,
@@ -57,13 +59,15 @@ namespace MetricsCalculator
             SyntaxKind.OrAssignmentExpression,
             SyntaxKind.RightShiftAssignmentExpression,
             SyntaxKind.SubtractAssignmentExpression,
+            SyntaxKind.ArrowExpressionClause,
         };
 
         List<SyntaxKind> CallSyntax = new List<SyntaxKind>
         {
             SyntaxKind.InvocationExpression,
             SyntaxKind.ObjectCreationExpression,
-            SyntaxKind.SimpleMemberAccessExpression
+            //SyntaxKind.SimpleMemberAccessExpression,
+
         };
 
         public ABCStrategy()
@@ -108,7 +112,9 @@ namespace MetricsCalculator
                 IncrementOccurenceCount(AssignmentCount);
             }
 
-            if (nodeKind == SyntaxKind.EqualsValueClause && node.Parent.IsKind(SyntaxKind.VariableDeclarator))
+            if (nodeKind == SyntaxKind.EqualsValueClause && 
+                (node.Parent.IsKind(SyntaxKind.VariableDeclarator) || node.Parent.IsKind(SyntaxKind.PropertyDeclaration))
+            )
             {
                 IncrementOccurenceCount(AssignmentCount);
             }

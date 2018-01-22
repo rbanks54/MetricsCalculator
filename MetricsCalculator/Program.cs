@@ -16,11 +16,27 @@ namespace MetricsCalculator
         {
             try
             {
+                string fileName = "";
+                if (args.Length > 0)
+                {
+                    fileName = args[0];
+                }
+                while (string.IsNullOrWhiteSpace(fileName))
+                {
+                    Console.Write("Path of file to analyse: ");
+                    fileName = Console.ReadLine();
+                    if (!File.Exists(fileName))
+                    {
+                        Console.WriteLine("File not found.");
+                        fileName = string.Empty;
+                    }
+                }
+
                 MetricsTreeWalker analyzer = new MetricsTreeWalker();
                 analyzer.Initialize();
-                analyzer.GetMetricsForFile(args[0]);
+                analyzer.GetMetricsForFile(fileName);
 
-                MetricsAccumulator metrics = analyzer.GetMetrics(args[0]);
+                MetricsAccumulator metrics = analyzer.GetMetrics(fileName);
                 LinesAndCyclomaticReport<string> report = new LinesAndCyclomaticReport<string>(new LinesAndCyclomaticReportConsoleFormatter());
                 Console.WriteLine(report.GenerateReport(metrics));
 

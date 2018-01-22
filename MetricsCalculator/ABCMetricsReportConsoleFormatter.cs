@@ -16,7 +16,7 @@ namespace MetricsCalculator
             outputDelievered = false;
         }
 
-        public void AddItem(int depth, string name, double abcScore, double abcScoreWithChildren)
+        public void AddItem(int depth, string name, double abcScore, double abcScoreWithChildren, int assignments, int branches, int calls)
         {
             if (outputDelievered)
             {
@@ -28,6 +28,10 @@ namespace MetricsCalculator
             if (abcScoreWithChildren > 0)
             {
                 reportLine += $" \tTotal ABC: {abcScoreWithChildren:0.##}";
+            }
+            else
+            {
+                reportLine += $" \t({assignments}|{branches}|{calls})";
             }
 
             sb.AppendLine(reportLine);
